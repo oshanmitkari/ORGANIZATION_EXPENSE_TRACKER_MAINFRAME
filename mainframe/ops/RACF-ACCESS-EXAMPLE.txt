@@ -1,0 +1,17 @@
+RACF SECURITY NOTES — TEMPLATE ONLY; DO NOT SUBMIT WITHOUT SITE ADMIN APPROVAL
+
+Purpose: restrict access to expense datasets and load libraries to authorized users.
+Actual profile names, groups, permissions, and command authority are site-specific.
+Ask the authorized mainframe administrator to create or approve profiles.
+
+Illustrative command pattern (not ready-to-run; replace profile/group names):
+  RDEFINE DATASET 'YOURHLQ.EXPENSE.**' UACC(NONE)
+  PERMIT 'YOURHLQ.EXPENSE.**' CLASS(DATASET) ID(YOURGROUP) ACCESS(READ)
+  SETROPTS GENERIC(DATASET) REFRESH
+
+Operational guidance:
+- Give write/update access only to the job owner or approved processing group.
+- Restrict access to transaction, employee-master, rejection, and report datasets.
+- Keep job logs and access decisions for audit review.
+- Never put passwords or real personal/financial records in source files or screenshots.
+- These commands require appropriate RACF authority and must be reviewed by the system administrator.

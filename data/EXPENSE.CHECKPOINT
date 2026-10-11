@@ -1,0 +1,6 @@
+01 INPUT_READ COMPLETE COUNT=16 MALFORMED=0                                     
+02 DEDUPLICATION COMPLETE COUNT=14                                              
+03 EMPLOYEE_MATCH COMPLETE MATCHED=13 UNKNOWN=1                                 
+04 VALIDATION COMPLETE APPROVED=10 REJECTED=3                                   
+05 REPORT_SORT COMPLETE COUNT=10                                                
+06 COUNT_CHECK PASS                                                             

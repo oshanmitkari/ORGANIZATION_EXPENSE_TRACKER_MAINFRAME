@@ -1,0 +1,16 @@
+//POSTEXP  JOB (ACCT),'DB2 EXPENSE POST',CLASS=A,MSGCLASS=X,
+//             NOTIFY=&SYSUID
+//* TEMPLATE ONLY. Set the site Db2 subsystem, plan, and load library.
+//* Precompile, compile, link-edit, and bind POSTEXP before execution.
+//* SYSIN record: expense-id X(16), actor-id X(8), run-id X(24).
+//RUNPOST  EXEC PGM=IKJEFT01,DYNAMNBR=20
+//SYSTSPRT DD SYSOUT=*
+//STEPLIB  DD DSN=&SYSUID..LOADLIB,DISP=SHR
+//SYSTSIN  DD *
+  DSN SYSTEM(&DB2SSN)
+  RUN PROGRAM(POSTEXP) PLAN(POSTPLAN) LIB('&SYSUID..LOADLIB')
+  END
+/*
+//SYSIN    DD *
+EXAMPLEEXP000001E0001003RUN202610090000000000000
+/*

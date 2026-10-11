@@ -1,0 +1,4 @@
+TX26000011  E999900120261003FOOD000045000Unknown employee                       employee not in master        
+TX26000014  E000100220261006UTIL000000000Zero amount                            amount must be greater than ze
+TX26000012  E000100320261341OFFC000089900Bad date                               invalid calendar date         
+TX26000013  E000100520261004XXXX000025000Bad category                           unknown category code         

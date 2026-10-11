@@ -1,0 +1,24 @@
+//VSAMDEF JOB (ACCT),'DEFINE EMPLOYEE KSDS',CLASS=A,MSGCLASS=X,
+//             NOTIFY=&SYSUID
+//* NON-DESTRUCTIVE TEMPLATE: DEFINE WILL FAIL IF THE CLUSTER EXISTS.
+//* No DELETE/PURGE without an approved recovery plan.
+//* Record length is 80; the 8-byte employee key is bytes 21-28,
+//* IDCAMS key offset is zero-based: 20.
+//DEFINE   EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER (NAME(&SYSUID..EXPENSE.MASTER) -
+         INDEXED KEYS(8 20) RECORDSIZE(80 80) -
+         SHAREOPTIONS(2 3)) -
+         DATA (NAME(&SYSUID..EXPENSE.MASTER.DATA) CYLINDERS(1 1)) -
+         INDEX (NAME(&SYSUID..EXPENSE.MASTER.INDEX) CYLINDERS(1 1))
+/*
+//* Load the sorted, fixed-block 80-byte employee PS master into KSDS.
+//* Runs only when DEFINE completes with RC=0. Use disposable HLQ.
+//LOAD     EXEC PGM=IDCAMS,COND=(0,NE,DEFINE)
+//SYSPRINT DD SYSOUT=*
+//EMPPS    DD DSN=&SYSUID..EMPLOYEE.MASTER,DISP=SHR
+//EMPVSAM  DD DSN=&SYSUID..EXPENSE.MASTER,DISP=OLD
+//SYSIN    DD *
+  REPRO INFILE(EMPPS) OUTFILE(EMPVSAM)
+/*

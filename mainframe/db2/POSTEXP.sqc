@@ -1,0 +1,139 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. POSTEXP.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+           EXEC SQL INCLUDE SQLCA END-EXEC.
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01 HV-INPUT.
+          05 HV-EXPENSE-ID PIC X(16).
+          05 HV-ACTOR-ID PIC X(08).
+          05 HV-RUN-ID PIC X(24).
+       01 HV-STATUS PIC X(24).
+       01 HV-LEDGER-EXPENSE PIC X(16).
+       01 HV-LEDGER-TXN PIC X(12).
+           EXEC SQL END DECLARE SECTION END-EXEC.
+       01 WS-RC PIC 99 VALUE 0.
+       01 WS-ALREADY PIC X VALUE 'N'.
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           MOVE SPACES TO HV-INPUT
+           ACCEPT HV-INPUT FROM SYSIN
+           IF HV-EXPENSE-ID = SPACES OR HV-ACTOR-ID = SPACES
+              OR HV-RUN-ID = SPACES
+              DISPLAY 'POSTEXP: REQUIRED INPUT IS MISSING'
+              MOVE 12 TO WS-RC
+              PERFORM FINISH-PROGRAM
+           END-IF
+           EXEC SQL
+              SELECT STATUS
+                INTO :HV-STATUS
+                FROM EXPENSE
+               WHERE EXPENSE_ID = :HV-EXPENSE-ID
+           END-EXEC
+           EVALUATE SQLCODE
+             WHEN 0
+               IF HV-STATUS = 'Posted'
+                  PERFORM CHECK-EXISTING-POST
+               ELSE
+                  IF HV-STATUS NOT = 'Approved'
+                     DISPLAY 'POSTEXP: EXPENSE NOT APPROVED'
+                     MOVE 4 TO WS-RC
+                     PERFORM ROLLBACK-UOW
+                     PERFORM FINISH-PROGRAM
+                  END-IF
+               END-IF
+             WHEN 100
+               DISPLAY 'POSTEXP: EXPENSE NOT FOUND'
+               MOVE 4 TO WS-RC
+               PERFORM ROLLBACK-UOW
+               PERFORM FINISH-PROGRAM
+             WHEN OTHER
+               DISPLAY 'POSTEXP: SELECT SQLCODE ' SQLCODE
+               MOVE 12 TO WS-RC
+               PERFORM ROLLBACK-UOW
+               PERFORM FINISH-PROGRAM
+           END-EVALUATE
+           IF WS-ALREADY = 'Y' PERFORM FINISH-PROGRAM END-IF
+           IF WS-RC NOT = 0 PERFORM FINISH-PROGRAM END-IF
+           EXEC SQL
+              INSERT INTO POSTING_LEDGER
+                 (TRANSACTION_ID, EXPENSE_ID, POSTED_AMOUNT,
+                  CURRENCY_CODE, COST_CENTRE, RUN_ID)
+              SELECT TRANSACTION_ID, EXPENSE_ID, AMOUNT,
+                     CURRENCY_CODE, COST_CENTRE, :HV-RUN-ID
+                FROM EXPENSE
+               WHERE EXPENSE_ID = :HV-EXPENSE-ID
+                 AND STATUS = 'Approved'
+           END-EXEC
+           IF SQLCODE = -803
+              PERFORM ROLLBACK-UOW
+              PERFORM CHECK-EXISTING-POST
+              PERFORM FINISH-PROGRAM
+           END-IF
+           IF SQLCODE NOT = 0 OR SQLERRD(3) NOT = 1
+              DISPLAY 'POSTEXP: LEDGER INSERT FAILED SQLCODE '
+                      SQLCODE ' ROWS ' SQLERRD(3)
+              MOVE 12 TO WS-RC
+              PERFORM ROLLBACK-UOW
+              PERFORM FINISH-PROGRAM
+           END-IF
+           EXEC SQL
+              UPDATE EXPENSE
+                 SET STATUS = 'Posted', UPDATED_TS = CURRENT TIMESTAMP
+               WHERE EXPENSE_ID = :HV-EXPENSE-ID
+                 AND STATUS = 'Approved'
+           END-EXEC
+           IF SQLCODE NOT = 0 OR SQLERRD(3) NOT = 1
+              DISPLAY 'POSTEXP: STATUS UPDATE FAILED SQLCODE '
+                      SQLCODE ' ROWS ' SQLERRD(3)
+              MOVE 12 TO WS-RC
+              PERFORM ROLLBACK-UOW
+              PERFORM FINISH-PROGRAM
+           END-IF
+           EXEC SQL
+              INSERT INTO AUDIT_EVENT
+                 (ACTOR_ID, ACTION_CODE, ENTITY_TYPE, ENTITY_ID,
+                  OUTCOME, CORRELATION_ID)
+              VALUES (:HV-ACTOR-ID, 'EXPENSE_POST', 'EXPENSE',
+                      :HV-EXPENSE-ID, 'SUCCESS', :HV-RUN-ID)
+           END-EXEC
+           IF SQLCODE NOT = 0
+              DISPLAY 'POSTEXP: AUDIT INSERT FAILED SQLCODE ' SQLCODE
+              MOVE 12 TO WS-RC
+              PERFORM ROLLBACK-UOW
+              PERFORM FINISH-PROGRAM
+           END-IF
+           EXEC SQL COMMIT END-EXEC
+           IF SQLCODE NOT = 0
+              DISPLAY 'POSTEXP: COMMIT FAILED SQLCODE ' SQLCODE
+              MOVE 12 TO WS-RC
+              PERFORM ROLLBACK-UOW
+           ELSE
+              DISPLAY 'POSTEXP: POSTING COMMITTED'
+           END-IF
+           PERFORM FINISH-PROGRAM.
+       CHECK-EXISTING-POST.
+           EXEC SQL
+              SELECT EXPENSE_ID, TRANSACTION_ID
+                INTO :HV-LEDGER-EXPENSE, :HV-LEDGER-TXN
+                FROM POSTING_LEDGER
+               WHERE EXPENSE_ID = :HV-EXPENSE-ID
+           END-EXEC
+           IF SQLCODE = 0
+              DISPLAY 'POSTEXP: ALREADY POSTED; NO DUPLICATE CREATED'
+              MOVE 'Y' TO WS-ALREADY
+              MOVE 0 TO WS-RC
+           ELSE
+              DISPLAY 'POSTEXP: POSTING LEDGER CHECK SQLCODE ' SQLCODE
+              MOVE 12 TO WS-RC
+              PERFORM ROLLBACK-UOW
+           END-IF.
+       ROLLBACK-UOW.
+           EXEC SQL ROLLBACK END-EXEC
+           IF SQLCODE NOT = 0
+              DISPLAY 'POSTEXP: ROLLBACK SQLCODE ' SQLCODE
+              MOVE 12 TO WS-RC
+           END-IF.
+       FINISH-PROGRAM.
+           MOVE WS-RC TO RETURN-CODE
+           GOBACK.

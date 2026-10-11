@@ -1,0 +1,11 @@
+RAW=16                                                                          
+MALFORMED=0                                                                     
+DUPLICATES=2                                                                    
+CLEAN=14                                                                        
+UNKNOWN_EMPLOYEE=1                                                              
+VALIDATION_REJECTED=3                                                           
+APPROVED=10                                                                     
+REPORT_BEFORE=10                                                                
+REPORT_AFTER=10                                                                 
+COUNT_CHECK=PASS                                                                
+RETURN_CODE=4                                                                   
