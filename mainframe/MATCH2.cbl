@@ -1,35 +1,37 @@
+      * NOTE: DD names stay FILE1-FILE4 (see EXPPIPE.jcl); only the
+      * internal COBOL file-names were changed so GnuCOBOL accepts them.
        IDENTIFICATION DIVISION.
        PROGRAM-ID. MATCH2.
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT FILE1 ASSIGN TO FILE1
+           SELECT TRANS-FILE ASSIGN TO FILE1
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS FS1.
-           SELECT FILE2 ASSIGN TO FILE2
+           SELECT MASTER-FILE ASSIGN TO FILE2
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS FS2.
-           SELECT FILE3 ASSIGN TO FILE3
+           SELECT MATCHED-FILE ASSIGN TO FILE3
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS FS3.
-           SELECT FILE4 ASSIGN TO FILE4
+           SELECT UNKNOWN-FILE ASSIGN TO FILE4
                ORGANIZATION IS SEQUENTIAL
                FILE STATUS IS FS4.
        DATA DIVISION.
        FILE SECTION.
-       FD  FILE1 RECORDING MODE F.
+       FD  TRANS-FILE RECORDING MODE F.
        01  F1-REC.
            05 F1-ID            PIC X(12).
            05 F1-KEY           PIC X(08).
            05 FILLER           PIC X(60).
-       FD  FILE2 RECORDING MODE F.
+       FD  MASTER-FILE RECORDING MODE F.
        01  F2-REC.
            05 FILLER           PIC X(20).
            05 F2-KEY           PIC X(08).
            05 FILLER           PIC X(52).
-       FD  FILE3 RECORDING MODE F.
+       FD  MATCHED-FILE RECORDING MODE F.
        01  F3-REC              PIC X(80).
-       FD  FILE4 RECORDING MODE F.
+       FD  UNKNOWN-FILE RECORDING MODE F.
        01  F4-REC.
            05 F4-DATA           PIC X(80).
            05 F4-REASON         PIC X(30).
@@ -60,8 +62,8 @@
            05 UNMATCHED-WHY    PIC X(30).
        PROCEDURE DIVISION.
        MAIN-PARA.
-           OPEN INPUT FILE1 FILE2
-                OUTPUT FILE3 FILE4
+           OPEN INPUT TRANS-FILE MASTER-FILE
+                OUTPUT MATCHED-FILE UNKNOWN-FILE
            IF FS1 = '00' MOVE 'Y' TO OPEN-F1 END-IF
            IF FS2 = '00' MOVE 'Y' TO OPEN-F2 END-IF
            IF FS3 = '00' MOVE 'Y' TO OPEN-F3 END-IF
@@ -74,9 +76,9 @@
               PERFORM CLOSE-OPEN-FILES
               GOBACK
            END-IF
-           PERFORM LOAD-FILE2 UNTIL END-F2 OR RETURN-CODE = 12
+           PERFORM LOAD-MASTER-FILE UNTIL END-F2 OR RETURN-CODE = 12
            IF RETURN-CODE NOT = 12
-              PERFORM MATCH-FILE1 UNTIL END-F1
+              PERFORM MATCH-TRANS-FILE UNTIL END-F1
                     OR RETURN-CODE = 12
            END-IF
            DISPLAY 'MATCHED RECORDS : ' MATCHED-CNT
@@ -86,8 +88,8 @@
               MOVE 4 TO RETURN-CODE
            END-IF
            GOBACK.
-       LOAD-FILE2.
-           READ FILE2
+       LOAD-MASTER-FILE.
+           READ MASTER-FILE
            EVALUATE FS2
              WHEN '10' SET END-F2 TO TRUE
              WHEN '00'
@@ -104,8 +106,8 @@
                MOVE 12 TO RETURN-CODE
                SET END-F2 TO TRUE
            END-EVALUATE.
-       MATCH-FILE1.
-           READ FILE1
+       MATCH-TRANS-FILE.
+           READ TRANS-FILE
            EVALUATE FS1
              WHEN '10' SET END-F1 TO TRUE
              WHEN '00'
@@ -150,30 +152,30 @@
            END-EVALUATE.
        CLOSE-OPEN-FILES.
            IF OPEN-F1 = 'Y'
-              CLOSE FILE1
+              CLOSE TRANS-FILE
               IF FS1 NOT = '00'
-                 DISPLAY 'FILE1 CLOSE ERROR ' FS1
+                 DISPLAY 'TRANS-FILE CLOSE ERROR ' FS1
                  MOVE 12 TO RETURN-CODE
               END-IF
            END-IF
            IF OPEN-F2 = 'Y'
-              CLOSE FILE2
+              CLOSE MASTER-FILE
               IF FS2 NOT = '00'
-                 DISPLAY 'FILE2 CLOSE ERROR ' FS2
+                 DISPLAY 'MASTER-FILE CLOSE ERROR ' FS2
                  MOVE 12 TO RETURN-CODE
               END-IF
            END-IF
            IF OPEN-F3 = 'Y'
-              CLOSE FILE3
+              CLOSE MATCHED-FILE
               IF FS3 NOT = '00'
-                 DISPLAY 'FILE3 CLOSE ERROR ' FS3
+                 DISPLAY 'MATCHED-FILE CLOSE ERROR ' FS3
                  MOVE 12 TO RETURN-CODE
               END-IF
            END-IF
            IF OPEN-F4 = 'Y'
-              CLOSE FILE4
+              CLOSE UNKNOWN-FILE
               IF FS4 NOT = '00'
-                 DISPLAY 'FILE4 CLOSE ERROR ' FS4
+                 DISPLAY 'UNKNOWN-FILE CLOSE ERROR ' FS4
                  MOVE 12 TO RETURN-CODE
               END-IF
            END-IF.

@@ -6,7 +6,7 @@
 2. Submission moves a draft to Pending approval and records a workflow event.
 3. A Manager or Finance Administrator may approve or reject a pending claim. Self-approval is blocked; rejection requires a reason.
 4. Finance Operator or Finance Administrator may separately post an approved claim in the local demo ledger. Posting is idempotent by transaction identifier.
-5. The fixed-width pipeline independently sorts, removes exact duplicate records, matches employee IDs, validates amount/date/category fields, and produces report, exception, summary, audit, and checkpoint files. It does not post expense workflow claims.
+5. The batch (triggered from the Batch operations page) runs the COBOL programs `EXPDEDUP`, `MATCH2`, `EXPVALID`, `EXPTOTAL`, `EXPRPT` and `CNTCHECK` as server processes under GnuCOBOL. It independently sorts, removes exact duplicate records, matches employee IDs, validates amount/date/category fields, and produces report, exception, summary, audit, and checkpoint files. It does not post expense workflow claims.
 
 ## Data and workflow boundaries
 

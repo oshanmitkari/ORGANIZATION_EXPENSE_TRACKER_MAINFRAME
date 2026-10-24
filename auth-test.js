@@ -77,9 +77,16 @@ async function main() {
 
     await expect(201,call('/api/transactions','POST',{emp:'E0001002',date:'20261001',cat:'FOOD',amount:10,desc:'batch auth test'},'finance'),'finance-only dataset input');
     await expect(403,call('/api/transactions','POST',{emp:'E0001002',date:'20261001',cat:'FOOD',amount:10,desc:'bad actor'},'auditor'),'auditor dataset write denied');
-    const run=await expect(200,call('/api/run','POST',{},'finance'),'authorized batch execution');
-    assert.equal(run.body.raw,1);assert.equal(run.body.rc,0);
-    const mismatch=await expect(200,call('/api/run','POST',{breakCount:true},'finance'),'count mismatch branch');assert.equal(mismatch.body.rc,12);
+    const cobolInfo=await require('./lib/cobol').compilerInfo();const engine=cobolInfo.available?'cobol':'js';
+    console.log(cobolInfo.available?'batch tests use the COBOL engine ('+cobolInfo.version+')':'COBOL compiler not found: batch tests fall back to the JS simulator');
+    await expect(200,call('/api/cobol/status','GET',undefined,'finance'),'finance reads COBOL status');
+    await expect(200,call('/api/cobol/status','GET',undefined,'auditor'),'auditor reads COBOL status');
+    await expect(403,call('/api/cobol/status','GET',undefined,'employee'),'employee denied COBOL status');
+    await expect(400,call('/api/run','POST',{engine:'bogus'},'finance'),'unknown engine rejected');
+    const run=await expect(200,call('/api/run','POST',{engine},'finance'),'authorized batch execution');
+    assert.equal(run.body.raw,1);assert.equal(run.body.rc,0);assert.equal(run.body.engine,cobolInfo.available?'COBOL':'JS_SIMULATOR');
+    if(cobolInfo.available){assert.equal(run.body.steps.length,7);assert.ok(/EXPDEDUP/.test(run.body.jobLog)&&/CNTCHECK/.test(run.body.jobLog));}
+    const mismatch=await expect(200,call('/api/run','POST',{engine,breakCount:true},'finance'),'count mismatch branch');assert.equal(mismatch.body.rc,12);
     await expect(403,call('/api/employees','POST',{id:'E0001012',name:'role escalation',department:'x',costCentre:'x'},'auditor'),'auditor employee write denied');
     await expect(404,call('/api/audit','POST',{entry:'tamper'},'admin'),'audit immutable through API');
     await expect(200,call('/api/auth/logout','POST',{},'employee'),'logout');

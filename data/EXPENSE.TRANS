@@ -14,3 +14,143 @@ TX26000013  E000100520261004XXXX000025000Bad category
 TX26000014  E000100220261006UTIL000000000Zero amount                            
 TX26000003  E000100120261001FOOD000125050Client lunch                           
 TX26000006  E000100420261003MEDC000064000Pharmacy                               
+TX26000017  E000100120261001FOOD000125050Client lunch                           
+TX26000018  E000100220261002TRVL000340000Cab to site                            
+TX26000019  E000100320261002OFFC000089900Printer toner                          
+TX26000020  E000100420261003MEDC000064000Pharmacy                               
+TX26000021  E000100520261004UTIL000210000Electricity share                      
+TX26000022  E000100620261005TRNG000750000Training fee                           
+TX26000023  E000100120261006TRVL000520000Train tickets                          
+TX26000024  E000100220261007FOOD000038000Team snacks                            
+TX26000025  E999900120261003FOOD000045000Unknown employee                       
+TX26000026  E000100320261341OFFC000089900Bad date                               
+TX26000027  E000100520261004XXXX000025000Bad category                           
+TX26000028  E000100220261006UTIL000000000Zero amount                            
+TX26000017  E000100120261001FOOD000125050Client lunch                           
+TX26000020  E000100420261003MEDC000064000Pharmacy                               
+TX26000031  E000100120261001FOOD000125050Client lunch                           
+TX26000032  E000100220261002TRVL000340000Cab to site                            
+TX26000033  E000100320261002OFFC000089900Printer toner                          
+TX26000034  E000100420261003MEDC000064000Pharmacy                               
+TX26000035  E000100520261004UTIL000210000Electricity share                      
+TX26000036  E000100620261005TRNG000750000Training fee                           
+TX26000037  E000100120261006TRVL000520000Train tickets                          
+TX26000038  E000100220261007FOOD000038000Team snacks                            
+TX26000039  E999900120261003FOOD000045000Unknown employee                       
+TX26000040  E000100320261341OFFC000089900Bad date                               
+TX26000041  E000100520261004XXXX000025000Bad category                           
+TX26000042  E000100220261006UTIL000000000Zero amount                            
+TX26000031  E000100120261001FOOD000125050Client lunch                           
+TX26000034  E000100420261003MEDC000064000Pharmacy                               
+TX26000045  E000100120261001FOOD000125050Client lunch                           
+TX26000046  E000100220261002TRVL000340000Cab to site                            
+TX26000047  E000100320261002OFFC000089900Printer toner                          
+TX26000048  E000100420261003MEDC000064000Pharmacy                               
+TX26000049  E000100520261004UTIL000210000Electricity share                      
+TX26000050  E000100620261005TRNG000750000Training fee                           
+TX26000051  E000100120261006TRVL000520000Train tickets                          
+TX26000052  E000100220261007FOOD000038000Team snacks                            
+TX26000053  E999900120261003FOOD000045000Unknown employee                       
+TX26000054  E000100320261341OFFC000089900Bad date                               
+TX26000055  E000100520261004XXXX000025000Bad category                           
+TX26000056  E000100220261006UTIL000000000Zero amount                            
+TX26000045  E000100120261001FOOD000125050Client lunch                           
+TX26000048  E000100420261003MEDC000064000Pharmacy                               
+TX26000059  E000100120261001FOOD000125050Client lunch                           
+TX26000060  E000100220261002TRVL000340000Cab to site                            
+TX26000061  E000100320261002OFFC000089900Printer toner                          
+TX26000062  E000100420261003MEDC000064000Pharmacy                               
+TX26000063  E000100520261004UTIL000210000Electricity share                      
+TX26000064  E000100620261005TRNG000750000Training fee                           
+TX26000065  E000100120261006TRVL000520000Train tickets                          
+TX26000066  E000100220261007FOOD000038000Team snacks                            
+TX26000067  E999900120261003FOOD000045000Unknown employee                       
+TX26000068  E000100320261341OFFC000089900Bad date                               
+TX26000069  E000100520261004XXXX000025000Bad category                           
+TX26000070  E000100220261006UTIL000000000Zero amount                            
+TX26000059  E000100120261001FOOD000125050Client lunch                           
+TX26000062  E000100420261003MEDC000064000Pharmacy                               
+TX26000073  E000100120261001FOOD000125050Client lunch                           
+TX26000074  E000100220261002TRVL000340000Cab to site                            
+TX26000075  E000100320261002OFFC000089900Printer toner                          
+TX26000076  E000100420261003MEDC000064000Pharmacy                               
+TX26000077  E000100520261004UTIL000210000Electricity share                      
+TX26000078  E000100620261005TRNG000750000Training fee                           
+TX26000079  E000100120261006TRVL000520000Train tickets                          
+TX26000080  E000100220261007FOOD000038000Team snacks                            
+TX26000081  E999900120261003FOOD000045000Unknown employee                       
+TX26000082  E000100320261341OFFC000089900Bad date                               
+TX26000083  E000100520261004XXXX000025000Bad category                           
+TX26000084  E000100220261006UTIL000000000Zero amount                            
+TX26000073  E000100120261001FOOD000125050Client lunch                           
+TX26000076  E000100420261003MEDC000064000Pharmacy                               
+TX26000087  E000100120261001FOOD000125050Client lunch                           
+TX26000088  E000100220261002TRVL000340000Cab to site                            
+TX26000089  E000100320261002OFFC000089900Printer toner                          
+TX26000090  E000100420261003MEDC000064000Pharmacy                               
+TX26000091  E000100520261004UTIL000210000Electricity share                      
+TX26000092  E000100620261005TRNG000750000Training fee                           
+TX26000093  E000100120261006TRVL000520000Train tickets                          
+TX26000094  E000100220261007FOOD000038000Team snacks                            
+TX26000095  E999900120261003FOOD000045000Unknown employee                       
+TX26000096  E000100320261341OFFC000089900Bad date                               
+TX26000097  E000100520261004XXXX000025000Bad category                           
+TX26000098  E000100220261006UTIL000000000Zero amount                            
+TX26000087  E000100120261001FOOD000125050Client lunch                           
+TX26000090  E000100420261003MEDC000064000Pharmacy                               
+TX26000101  E000100120261001FOOD000125050Client lunch                           
+TX26000102  E000100220261002TRVL000340000Cab to site                            
+TX26000103  E000100320261002OFFC000089900Printer toner                          
+TX26000104  E000100420261003MEDC000064000Pharmacy                               
+TX26000105  E000100520261004UTIL000210000Electricity share                      
+TX26000106  E000100620261005TRNG000750000Training fee                           
+TX26000107  E000100120261006TRVL000520000Train tickets                          
+TX26000108  E000100220261007FOOD000038000Team snacks                            
+TX26000109  E999900120261003FOOD000045000Unknown employee                       
+TX26000110  E000100320261341OFFC000089900Bad date                               
+TX26000111  E000100520261004XXXX000025000Bad category                           
+TX26000112  E000100220261006UTIL000000000Zero amount                            
+TX26000101  E000100120261001FOOD000125050Client lunch                           
+TX26000104  E000100420261003MEDC000064000Pharmacy                               
+TX26000115  E000100120261001FOOD000125050Client lunch                           
+TX26000116  E000100220261002TRVL000340000Cab to site                            
+TX26000117  E000100320261002OFFC000089900Printer toner                          
+TX26000118  E000100420261003MEDC000064000Pharmacy                               
+TX26000119  E000100520261004UTIL000210000Electricity share                      
+TX26000120  E000100620261005TRNG000750000Training fee                           
+TX26000121  E000100120261006TRVL000520000Train tickets                          
+TX26000122  E000100220261007FOOD000038000Team snacks                            
+TX26000123  E999900120261003FOOD000045000Unknown employee                       
+TX26000124  E000100320261341OFFC000089900Bad date                               
+TX26000125  E000100520261004XXXX000025000Bad category                           
+TX26000126  E000100220261006UTIL000000000Zero amount                            
+TX26000115  E000100120261001FOOD000125050Client lunch                           
+TX26000118  E000100420261003MEDC000064000Pharmacy                               
+TX26000129  E000100120261001FOOD000125050Client lunch                           
+TX26000130  E000100220261002TRVL000340000Cab to site                            
+TX26000131  E000100320261002OFFC000089900Printer toner                          
+TX26000132  E000100420261003MEDC000064000Pharmacy                               
+TX26000133  E000100520261004UTIL000210000Electricity share                      
+TX26000134  E000100620261005TRNG000750000Training fee                           
+TX26000135  E000100120261006TRVL000520000Train tickets                          
+TX26000136  E000100220261007FOOD000038000Team snacks                            
+TX26000137  E999900120261003FOOD000045000Unknown employee                       
+TX26000138  E000100320261341OFFC000089900Bad date                               
+TX26000139  E000100520261004XXXX000025000Bad category                           
+TX26000140  E000100220261006UTIL000000000Zero amount                            
+TX26000129  E000100120261001FOOD000125050Client lunch                           
+TX26000132  E000100420261003MEDC000064000Pharmacy                               
+TX26000143  E000100120261001FOOD000125050Client lunch                           
+TX26000144  E000100220261002TRVL000340000Cab to site                            
+TX26000145  E000100320261002OFFC000089900Printer toner                          
+TX26000146  E000100420261003MEDC000064000Pharmacy                               
+TX26000147  E000100520261004UTIL000210000Electricity share                      
+TX26000148  E000100620261005TRNG000750000Training fee                           
+TX26000149  E000100120261006TRVL000520000Train tickets                          
+TX26000150  E000100220261007FOOD000038000Team snacks                            
+TX26000151  E999900120261003FOOD000045000Unknown employee                       
+TX26000152  E000100320261341OFFC000089900Bad date                               
+TX26000153  E000100520261004XXXX000025000Bad category                           
+TX26000154  E000100220261006UTIL000000000Zero amount                            
+TX26000143  E000100120261001FOOD000125050Client lunch                           
+TX26000146  E000100420261003MEDC000064000Pharmacy                               

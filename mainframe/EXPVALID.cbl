@@ -135,7 +135,7 @@
                MOVE 'INVALID MONTH' TO WHY
            END-EVALUATE
            IF WHY = SPACES AND
-              (WS-DAY < 1 OR WS-DAY > WS-MAX-DAY)
+              (WS-DAY < 1 OR WS-DAY > WS-MAX-DAY OR WS-YEAR < 1900)
               MOVE 'INVALID CALENDAR DATE' TO WHY
            END-IF.
        CLOSE-OPEN-FILES.

@@ -2,9 +2,89 @@ TX26000001  E000100120261009FOOD000001300dv
 TX26000002  E000100120261009FOOD000001200d                                      
 TX26000003  E000100120261001FOOD000125050Client lunch                           
 TX26000009  E000100120261006TRVL000520000Train tickets                          
+TX26000017  E000100120261001FOOD000125050Client lunch                           
+TX26000023  E000100120261006TRVL000520000Train tickets                          
+TX26000031  E000100120261001FOOD000125050Client lunch                           
+TX26000037  E000100120261006TRVL000520000Train tickets                          
+TX26000045  E000100120261001FOOD000125050Client lunch                           
+TX26000051  E000100120261006TRVL000520000Train tickets                          
+TX26000059  E000100120261001FOOD000125050Client lunch                           
+TX26000065  E000100120261006TRVL000520000Train tickets                          
+TX26000073  E000100120261001FOOD000125050Client lunch                           
+TX26000079  E000100120261006TRVL000520000Train tickets                          
+TX26000087  E000100120261001FOOD000125050Client lunch                           
+TX26000093  E000100120261006TRVL000520000Train tickets                          
+TX26000101  E000100120261001FOOD000125050Client lunch                           
+TX26000107  E000100120261006TRVL000520000Train tickets                          
+TX26000115  E000100120261001FOOD000125050Client lunch                           
+TX26000121  E000100120261006TRVL000520000Train tickets                          
+TX26000129  E000100120261001FOOD000125050Client lunch                           
+TX26000135  E000100120261006TRVL000520000Train tickets                          
+TX26000143  E000100120261001FOOD000125050Client lunch                           
+TX26000149  E000100120261006TRVL000520000Train tickets                          
 TX26000004  E000100220261002TRVL000340000Cab to site                            
 TX26000010  E000100220261007FOOD000038000Team snacks                            
+TX26000018  E000100220261002TRVL000340000Cab to site                            
+TX26000024  E000100220261007FOOD000038000Team snacks                            
+TX26000032  E000100220261002TRVL000340000Cab to site                            
+TX26000038  E000100220261007FOOD000038000Team snacks                            
+TX26000046  E000100220261002TRVL000340000Cab to site                            
+TX26000052  E000100220261007FOOD000038000Team snacks                            
+TX26000060  E000100220261002TRVL000340000Cab to site                            
+TX26000066  E000100220261007FOOD000038000Team snacks                            
+TX26000074  E000100220261002TRVL000340000Cab to site                            
+TX26000080  E000100220261007FOOD000038000Team snacks                            
+TX26000088  E000100220261002TRVL000340000Cab to site                            
+TX26000094  E000100220261007FOOD000038000Team snacks                            
+TX26000102  E000100220261002TRVL000340000Cab to site                            
+TX26000108  E000100220261007FOOD000038000Team snacks                            
+TX26000116  E000100220261002TRVL000340000Cab to site                            
+TX26000122  E000100220261007FOOD000038000Team snacks                            
+TX26000130  E000100220261002TRVL000340000Cab to site                            
+TX26000136  E000100220261007FOOD000038000Team snacks                            
+TX26000144  E000100220261002TRVL000340000Cab to site                            
+TX26000150  E000100220261007FOOD000038000Team snacks                            
 TX26000005  E000100320261002OFFC000089900Printer toner                          
+TX26000019  E000100320261002OFFC000089900Printer toner                          
+TX26000033  E000100320261002OFFC000089900Printer toner                          
+TX26000047  E000100320261002OFFC000089900Printer toner                          
+TX26000061  E000100320261002OFFC000089900Printer toner                          
+TX26000075  E000100320261002OFFC000089900Printer toner                          
+TX26000089  E000100320261002OFFC000089900Printer toner                          
+TX26000103  E000100320261002OFFC000089900Printer toner                          
+TX26000117  E000100320261002OFFC000089900Printer toner                          
+TX26000131  E000100320261002OFFC000089900Printer toner                          
+TX26000145  E000100320261002OFFC000089900Printer toner                          
 TX26000006  E000100420261003MEDC000064000Pharmacy                               
+TX26000020  E000100420261003MEDC000064000Pharmacy                               
+TX26000034  E000100420261003MEDC000064000Pharmacy                               
+TX26000048  E000100420261003MEDC000064000Pharmacy                               
+TX26000062  E000100420261003MEDC000064000Pharmacy                               
+TX26000076  E000100420261003MEDC000064000Pharmacy                               
+TX26000090  E000100420261003MEDC000064000Pharmacy                               
+TX26000104  E000100420261003MEDC000064000Pharmacy                               
+TX26000118  E000100420261003MEDC000064000Pharmacy                               
+TX26000132  E000100420261003MEDC000064000Pharmacy                               
+TX26000146  E000100420261003MEDC000064000Pharmacy                               
 TX26000007  E000100520261004UTIL000210000Electricity share                      
+TX26000021  E000100520261004UTIL000210000Electricity share                      
+TX26000035  E000100520261004UTIL000210000Electricity share                      
+TX26000049  E000100520261004UTIL000210000Electricity share                      
+TX26000063  E000100520261004UTIL000210000Electricity share                      
+TX26000077  E000100520261004UTIL000210000Electricity share                      
+TX26000091  E000100520261004UTIL000210000Electricity share                      
+TX26000105  E000100520261004UTIL000210000Electricity share                      
+TX26000119  E000100520261004UTIL000210000Electricity share                      
+TX26000133  E000100520261004UTIL000210000Electricity share                      
+TX26000147  E000100520261004UTIL000210000Electricity share                      
 TX26000008  E000100620261005TRNG000750000Training fee                           
+TX26000022  E000100620261005TRNG000750000Training fee                           
+TX26000036  E000100620261005TRNG000750000Training fee                           
+TX26000050  E000100620261005TRNG000750000Training fee                           
+TX26000064  E000100620261005TRNG000750000Training fee                           
+TX26000078  E000100620261005TRNG000750000Training fee                           
+TX26000092  E000100620261005TRNG000750000Training fee                           
+TX26000106  E000100620261005TRNG000750000Training fee                           
+TX26000120  E000100620261005TRNG000750000Training fee                           
+TX26000134  E000100620261005TRNG000750000Training fee                           
+TX26000148  E000100620261005TRNG000750000Training fee                           

@@ -1,11 +1,14 @@
 {
   "name": "expense-tracker-mainframe",
-  "version": "1.1.0",
-  "description": "Expense Tracker batch-processing demonstration with Node.js simulator and z/OS COBOL/JCL/REXX/DB2/VSAM/RACF artifacts",
+  "version": "1.2.0",
+  "description": "Expense Tracker batch-processing demonstration with a Node.js web app that runs the COBOL batch programs (GnuCOBOL) plus z/OS COBOL/JCL/REXX/DB2/VSAM/RACF artifacts",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test.js && node auth-test.js",
+    "test": "node test.js && node cobol-test.js && node auth-test.js",
+    "test:practicals": "node practicals/TESTS/run-all.js",
+    "build:cobol": "node scripts/build-cobol.js",
+    "batch:cobol": "node scripts/run-cobol-batch.js",
     "demo:bootstrap": "node scripts/bootstrap-demo-users.js"
   },
   "license": "MIT"

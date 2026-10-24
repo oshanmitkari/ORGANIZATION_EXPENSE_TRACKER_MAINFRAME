@@ -1,4 +1,44 @@
-TX26000011  E999900120261003FOOD000045000Unknown employee                       employee not in master        
-TX26000014  E000100220261006UTIL000000000Zero amount                            amount must be greater than ze
-TX26000012  E000100320261341OFFC000089900Bad date                               invalid calendar date         
-TX26000013  E000100520261004XXXX000025000Bad category                           unknown category code         
+TX26000011  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000025  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000039  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000053  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000067  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000081  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000095  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000109  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000123  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000137  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000151  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000014  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000028  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000042  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000056  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000070  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000084  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000098  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000112  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000126  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000140  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000154  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000012  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000026  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000040  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000054  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000068  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000082  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000096  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000110  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000124  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000138  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000152  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000013  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000027  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000041  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000055  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000069  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000083  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000097  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000111  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000125  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000139  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000153  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
