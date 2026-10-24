@@ -9,6 +9,7 @@ TX26000109  E999900120261003FOOD000045000Unknown employee                       
 TX26000123  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
 TX26000137  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
 TX26000151  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
+TX26000165  E999900120261003FOOD000045000Unknown employee                       EMPLOYEE NOT IN MASTER        
 TX26000014  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
 TX26000028  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
 TX26000042  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
@@ -20,6 +21,7 @@ TX26000112  E000100220261006UTIL000000000Zero amount                            
 TX26000126  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
 TX26000140  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
 TX26000154  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
+TX26000168  E000100220261006UTIL000000000Zero amount                            AMOUNT MUST BE > 0            
 TX26000012  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
 TX26000026  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
 TX26000040  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
@@ -31,6 +33,7 @@ TX26000110  E000100320261341OFFC000089900Bad date                               
 TX26000124  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
 TX26000138  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
 TX26000152  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
+TX26000166  E000100320261341OFFC000089900Bad date                               INVALID MONTH                 
 TX26000013  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
 TX26000027  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
 TX26000041  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
@@ -42,3 +45,4 @@ TX26000111  E000100520261004XXXX000025000Bad category                           
 TX26000125  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
 TX26000139  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
 TX26000153  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
+TX26000167  E000100520261004XXXX000025000Bad category                           UNKNOWN CATEGORY              
