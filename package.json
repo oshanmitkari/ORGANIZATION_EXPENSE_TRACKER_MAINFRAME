@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:demo": "UI_MODE=demo node server.js",
+    "demo:reset": "node scripts/reset-demo-users.js",
     "test": "node test.js && node auth-test.js",
     "demo:bootstrap": "node scripts/bootstrap-demo-users.js"
   },

@@ -60,6 +60,36 @@ function sameOrigin(req) {
   try { const u=new URL(origin); return u.host===req.headers.host && ['http:','https:'].includes(u.protocol); } catch { return false; }
 }
 
+async function proxyMainframe(req, res, url) {
+  const targetPath = url.pathname.slice('/mainframe'.length);
+  const allowed = targetPath === '/api/health' || targetPath === '/api/mainframe/health' ||
+    targetPath === '/api/expenses' || targetPath === '/api/reports/mainframe' ||
+    targetPath === '/api/reports/monthly' || targetPath === '/api/reports/categories' ||
+    targetPath === '/api/batches' || /^\/api\/expenses\/[^/]+\/(approve|reject)$/.test(targetPath) ||
+    /^\/api\/jobs\/[A-Za-z0-9-]+$/.test(targetPath);
+  if (!allowed || !['GET', 'POST'].includes(req.method)) return send(res, 404, {error:'not found'});
+  const actor = auth.currentActor(req);
+  if (!actor) return send(res, 401, {error:'Authentication required'});
+  const permission = targetPath === '/api/expenses' && req.method === 'POST' ? 'expense:create' :
+    /^\/api\/expenses\/[^/]+\/approve$/.test(targetPath) ? 'expense:approve_assigned' :
+    /^\/api\/expenses\/[^/]+\/reject$/.test(targetPath) ? 'expense:reject_assigned' :
+    targetPath === '/api/batches' && req.method === 'POST' ? 'batch:execute' :
+    targetPath === '/api/batches' ? 'batch:read' :
+    targetPath === '/api/expenses' ? (actor.role === 'EMPLOYEE' ? 'expense:read_own' : actor.role === 'MANAGER' ? 'expense:read_team' : 'expense:read_all') :
+    targetPath.startsWith('/api/reports/') ? ({EMPLOYEE:'report:read_own',MANAGER:'report:read_team'}[actor.role] || 'report:read') :
+    targetPath.startsWith('/api/jobs/') ? (actor.role === 'EMPLOYEE' ? 'expense:read_own' : actor.role === 'MANAGER' ? 'expense:read_team' : 'expense:read_all') : null;
+  if (permission) { try { auth.requirePermission(actor, permission); } catch (error) { return send(res, error.status || 403, {error:error.message}); } }
+  const upstream = new URL(targetPath + url.search, process.env.FASTAPI_BASE_URL || 'http://localhost:8000');
+  try {
+    const body = req.method === 'POST' ? JSON.stringify(await readBody(req)) : undefined;
+    const response = await fetch(upstream, {method:req.method, headers:{'Content-Type':'application/json'}, body});
+    const text = await response.text();
+    return send(res, response.status, text, response.headers.get('content-type') || 'application/json; charset=utf-8');
+  } catch (error) {
+    return send(res, 503, {error:'FastAPI mainframe service unavailable'});
+  }
+}
+
 async function handleApi(req,res,url) {
   const p=url.pathname, m=req.method, secure=!!req.socket.encrypted || process.env.NODE_ENV==='production';
   if(p==='/api/auth/session'&&m==='GET') return send(res,200,{user:auth.actorPayload(auth.currentActor(req))});
@@ -118,9 +148,10 @@ async function handleApi(req,res,url) {
 
 function createServer(){
   return http.createServer(async(req,res)=>{
-    res.setHeader('X-Frame-Options','DENY');res.setHeader('Referrer-Policy','same-origin');
-    const url=new URL(req.url,'http://localhost');
-    try{if(url.pathname.startsWith('/api/'))return await handleApi(req,res,url);if(req.method!=='GET')return send(res,405,{error:'method not allowed'});res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'");return send(res,200,fs.readFileSync(path.join(__dirname,'public','index.html'),'utf8'),'text/html; charset=utf-8');}
+  res.setHeader('X-Frame-Options','DENY');res.setHeader('Referrer-Policy','same-origin');
+  const url=new URL(req.url,'http://localhost');
+    if(url.pathname==='/live-workflow.js')return send(res,200,fs.readFileSync(path.join(__dirname,'public','live-workflow.js'),'utf8'),'application/javascript; charset=utf-8');
+    try{if(url.pathname.startsWith('/api/'))return await handleApi(req,res,url);if(url.pathname.startsWith('/mainframe/'))return await proxyMainframe(req,res,url);if(req.method!=='GET')return send(res,405,{error:'method not allowed'});res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'");const uiConfig={mode:process.env.UI_MODE||'demo',apiBaseUrl:process.env.UI_MODE==='mainframe'?'/mainframe':(process.env.FASTAPI_BASE_URL||'http://localhost:8000')};if(url.pathname==='/config.js')return send(res,200,`window.__EXPENSE_UI_CONFIG__=${JSON.stringify(uiConfig)};`,'application/javascript; charset=utf-8');let html=fs.readFileSync(path.join(__dirname,'public','index.html'),'utf8');html=html.replace('<script src="/config.js"></script>',`<script>window.__EXPENSE_UI_CONFIG__=${JSON.stringify(uiConfig)};</script><script src="/live-workflow.js"></script>`);return send(res,200,html,'text/html; charset=utf-8');}
     catch(e){return send(res,e.status||400,{error:e.message||'bad request'});}
   });
 }

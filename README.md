@@ -48,7 +48,7 @@ The mainframe flow is intended to be connected through a separately implemented 
 - `mainframe/db2/`: relational DDL, query examples, and the embedded-SQL `POSTEXP.sqc` plus DSN JCL posting example.
 - `mainframe/ops/RACF-ACCESS-EXAMPLE.txt`: site-customized least-privilege example; admin authority required.
 
-These artifacts have not been compiled, submitted, or run on z/OS/Db2. See the verification matrix for concrete gaps and required target checks.
+The COBOL/JCL expense path has been compiled and runtime-verified in the dedicated `Z86073.EXPTRK.*` namespace on z/OS. The separate Db2 artifacts remain uncompiled/unsubmitted. See the verification matrix and [z/OS operations guide](docs/MAINFRAME-SETUP.md) for evidence and remaining target checks.
 
 ## 80-byte transaction record
 
@@ -63,11 +63,25 @@ These artifacts have not been compiled, submitted, or run on z/OS/Db2. See the v
 
 Maximum amount is INR 9,999,999.99. Legacy batch category codes are FOOD, TRVL, OFFC, MEDC, UTIL, and TRNG. The workflow category list uses business labels and is not yet mapped/exported to the legacy record codes.
 
+## FastAPI / real z/OS integration
+
+The repository includes a separate FastAPI service in `backend/`. It is the controlled bridge for the project-owned expense KSDS and uses Zowe CLI subprocess calls, asynchronous request/job state, exact paise serialization, and COBOL result records. It does not replace the existing Node demo or silently fall back to local data. Start it with the commands in [backend/README.md](backend/README.md). With `ZOWE_ENABLED=false` (the safe default), requests are retained and honestly marked unavailable; `posted` is only returned after a matching mainframe result record.
+
+The existing Node-served browser UI can be switched explicitly to the live FastAPI path with `UI_MODE=mainframe`. In that mode its listing and report screens read the verified `Z86073.EXPTRK.REPORT` workflow through FastAPI, and its creation form submits only to the controlled `/api/expenses` contract. The default `UI_MODE=demo` remains the local demonstration workflow.
+
+For normal username/password testing, run `npm run start:demo` (or `npm start`) without `UI_MODE=mainframe`. Create the local demo accounts once with `ALLOW_DEMO_BOOTSTRAP=YES npm run demo:bootstrap`; the command prints separate one-time credentials for Employee, Manager, Finance Operator, Finance Administrator, and Auditor roles.
+
+If the one-time passwords were lost, reset the local demo accounts explicitly with `ALLOW_DEMO_RESET=YES npm run demo:reset`. The existing `data/users.json` is renamed to a timestamped backup before fresh credentials are generated and printed.
+
+The new mainframe assets are `mainframe/copybooks/EXPCOPY.cpy`, `mainframe/cobol/EXPPOST.cbl`, `EXPREAD.cbl`, `EXPRPT.cbl`, `mainframe/jcl/EXPDEF.jcl`, `EXPLOAD.jcl`, `EXPPOST.jcl`, `EXPREAD.jcl`, `EXPRPT.jcl`, and `mainframe/rexx/EXPMON.rexx`. They use the separate `&SYSUID..EXPTRK.*` namespace and do not redefine the existing coursework clusters.
+
 ## Tests
 
 ```powershell
 npm test
 ```
+
+The FastAPI unit tests run independently with `pytest -q backend/tests` after installing `backend/requirements.txt`.
 
 This runs pipeline regression tests and direct HTTP tests using a temporary data directory and test-only hashed accounts. It covers unauthenticated access, all demo roles, forged identity headers, cross-user access, manager assignment, self-approval, posting, batch execution, auditor read-only access, mass-assignment rejection, logout, count mismatch, and audited denials. It does not compile COBOL or validate JCL/REXX/Db2/VSAM/RACF on z/OS.
 

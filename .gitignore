@@ -3,3 +3,8 @@ data/users.json
 data/workflow-demo.json
 data/*.tmp
 *.log
+backend/runtime/
+.env
+.venv/
+__pycache__/
+.pytest_cache/
