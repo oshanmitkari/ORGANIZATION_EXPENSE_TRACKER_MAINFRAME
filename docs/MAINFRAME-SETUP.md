@@ -3,7 +3,7 @@
 These are deployment templates. Review them with the authorized site operations and DB2 teams before use. The dedicated employee and expense resources were provisioned in the project namespace, and controlled COBOL posting, readback, and reporting were verified on 2026-10-25. Existing coursework clusters were not modified.
 
 1. Allocate transaction, clean, matched, valid and report PS datasets as `RECFM=FB,LRECL=80`. Exception records containing an 80-byte transaction plus a 30-byte reason use `LRECL=110`. Confirm every actual COBOL FD and DD uses the same contract.
-2. Upload `EXPENSE-REC.cpy`, COBOL, JCL, and REXX sources to approved libraries using the site's transfer and encoding standards.
+2. Upload `EXPENSE-REC.cpy`, COBOL, JCL, and REXX sources to approved libraries using the site's transfer and encoding standards. Upload `mainframe/rexx/EXPMON.rexx` to the approved `&SYSUID..REXX` exec library before using `mainframe/jcl/EXPMON.jcl`.
 3. Compile `MATCH2.cbl`, `EXPVALID.cbl`, `CNTCHECK.cbl`, and `VSAMLOOK.cbl` using the authorized compiler procedure. Precompile, compile, link-edit, and bind `db2/POSTEXP.sqc` with the site Db2 procedure, then set its plan and libraries in `db2/POSTEXP.jcl`.
 4. Seed the project transaction/master records with the verified 80-byte layout in `mainframe/copybooks/EXPCOPY.cpy`. The project-owned employee KSDS is `Z86073.EXPTRK.EMPLOYEE`: FB80, key offset 0, key length 8, with `ID(8)|NAME(30)|DEPT(10)|STATUS(1)|FILLER(31)`. The seed contains fictional IDs `E0001001`, `E0001002`, `E0001003`, and inactive `E0001004`.
 5. Run isolated SORT, ICETOOL, COBOL, VSAM, and Db2 stages in a disposable test HLQ/schema first. Check JES output, DD allocation, record counts, and return codes at each stage.
@@ -11,6 +11,18 @@ These are deployment templates. Review them with the authorized site operations 
 7. Run DB2 DDL only in an authorized development schema after DBA review. This project does not include a verified fixed-width-to-DB2 loader or live Node connection.
 8. RACF examples are illustrative and require site-specific profiles and an authorized administrator. Do not submit them with placeholder group or HLQ values.
 9. Retain approved job logs and output evidence for both successful count control and intentional failure. Do not use real personal or financial data in local fixtures.
+
+## REXX automation step
+
+`mainframe/jcl/EXPMON.jcl` is the controlled automation wrapper for `mainframe/rexx/EXPMON.rexx`. Submit it after `EXPPOST.jcl` has completed and the result dataset is available. It runs under `IKJEFT01`, reads only `Z86073.EXPTRK.RESULT`, prints a bounded summary to `SYSTSPRT`, and returns a useful condition code for a scheduler or operator:
+
+| Return code | Meaning | Operational action |
+|---:|---|---|
+| 0 | Every parsed result is `POSTED` | Continue to report/readback checks |
+| 4 | Records are valid but at least one is `REJECTED` | Review exceptions; do not treat the batch as fully successful |
+| 12 | Missing/unreadable output, malformed record, or unknown status | Stop and investigate JES, DD, dataset, or program output |
+
+The REXX utility validates the dataset-name argument, allocates the result dataset read-only, uses `EXECIO` to inspect pipe-delimited result records, frees the allocation, and does not submit jobs or accept arbitrary client commands. TSO/E execution still requires target-site validation; local Node and FastAPI tests do not execute REXX.
 
 Dataset names, compiler procedures, DB2 subsystem, RACF permissions, utility options, encoding, and storage allocation vary by installation. Treat the supplied artifacts as adaptable templates, not portable certified production jobs.
 

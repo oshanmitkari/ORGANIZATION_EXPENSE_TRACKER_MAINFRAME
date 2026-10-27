@@ -45,6 +45,7 @@ The mainframe flow is intended to be connected through a separately implemented 
 - `mainframe/VSAMLOOK.cbl`, `VSAM-DEFINE.jcl`, and `VSAM-MATCH.jcl`: 80-byte employee KSDS layout, lookup source, and run templates.
 - `mainframe/EXPCLEAN.jcl`, `EXPPIPE.jcl`, `RPTCHECK.jcl`, and `EXPENSUM.jcl`: DFSORT and ICETOOL dedupe, staged processing, sorted reports, totals, and count checks.
 - `mainframe/DEDUPSRT.rexx`: TSO/E exact dedupe and employee-key sort example.
+- `mainframe/rexx/EXPMON.rexx` and `mainframe/jcl/EXPMON.jcl`: bounded post-processing automation that checks EXPPOST result records and returns RC 0, 4, or 12.
 - `mainframe/db2/`: relational DDL, query examples, and the embedded-SQL `POSTEXP.sqc` plus DSN JCL posting example.
 - `mainframe/ops/RACF-ACCESS-EXAMPLE.txt`: site-customized least-privilege example; admin authority required.
 
@@ -73,7 +74,7 @@ For normal username/password testing, run `npm run start:demo` (or `npm start`) 
 
 If the one-time passwords were lost, reset the local demo accounts explicitly with `ALLOW_DEMO_RESET=YES npm run demo:reset`. The existing `data/users.json` is renamed to a timestamped backup before fresh credentials are generated and printed.
 
-The new mainframe assets are `mainframe/copybooks/EXPCOPY.cpy`, `mainframe/cobol/EXPPOST.cbl`, `EXPREAD.cbl`, `EXPRPT.cbl`, `mainframe/jcl/EXPDEF.jcl`, `EXPLOAD.jcl`, `EXPPOST.jcl`, `EXPREAD.jcl`, `EXPRPT.jcl`, and `mainframe/rexx/EXPMON.rexx`. They use the separate `&SYSUID..EXPTRK.*` namespace and do not redefine the existing coursework clusters.
+The new mainframe assets are `mainframe/copybooks/EXPCOPY.cpy`, `mainframe/cobol/EXPPOST.cbl`, `EXPREAD.cbl`, `EXPRPT.cbl`, `mainframe/jcl/EXPDEF.jcl`, `EXPLOAD.jcl`, `EXPPOST.jcl`, `EXPREAD.jcl`, `EXPRPT.jcl`, `EXPMON.jcl`, and `mainframe/rexx/EXPMON.rexx`. They use the separate `&SYSUID..EXPTRK.*` namespace and do not redefine the existing coursework clusters.
 
 ## Tests
 
