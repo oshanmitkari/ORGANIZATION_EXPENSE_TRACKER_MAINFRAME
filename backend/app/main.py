@@ -19,6 +19,7 @@ repo = JobRepository(settings.data_dir / "jobs.json")
 batch_repo = JobRepository(settings.data_dir / "batches.json")
 service = ExpenseService(settings, repo, ZoweCLI(settings))
 app = FastAPI(title=settings.app_name, version="1.0.0")
+_report_cache = {"at": 0.0, "value": None}
 app.add_middleware(CORSMiddleware, allow_origins=[settings.frontend_origin], allow_credentials=True,
                    allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
 
@@ -26,7 +27,14 @@ app.add_middleware(CORSMiddleware, allow_origins=[settings.frontend_origin], all
 def _mainframe_report() -> dict:
     if not settings.zowe_enabled:
         return {"expenses": [], "total": {"count": 0, "amount_paise": 0}}
-    return parse_report(service.adapter.read_output_dataset(settings.report_dataset))
+    if _report_cache["value"] is not None and time.monotonic() - _report_cache["at"] < 5:
+        return _report_cache["value"]
+    report = parse_report(service.adapter.read_output_dataset(settings.report_dataset))
+    batches = sorted(batch_repo.all(), key=lambda item: item.get("created_at", ""), reverse=True)
+    report["report_dataset"] = settings.report_dataset
+    report["latest_batch"] = batches[0] if batches else None
+    _report_cache.update(at=time.monotonic(), value=report)
+    return report
 
 
 def _mainframe_expenses() -> list[dict]:
@@ -113,22 +121,30 @@ def reject_expense(expense_id: str, body: dict | None = None):
                        rejection_reason=reason)
 
 
-def _run_batch(batch_id: str, items: list[dict]):
-    batch_repo.update(batch_id, status="running")
-    posted = rejected = failed = 0
+def _run_batch(batch_request_id: str, batch_id: str, items: list[dict]):
+    batch_repo.update(batch_request_id, status="running")
     for raw in items:
-        request_id = raw["request_id"]
-        repo.update(request_id, status=ExpenseStatus.QUEUED.value)
-        result = service.submit(ExpenseCreate(**raw))
-        deadline = time.monotonic() + settings.allocation_timeout_seconds + settings.timeout_seconds * 2
-        while result["status"] == ExpenseStatus.RUNNING.value and time.monotonic() < deadline:
-            time.sleep(2)
-            result = service.refresh(request_id)
-        if result["status"] == ExpenseStatus.POSTED.value: posted += 1
-        elif result["status"] == ExpenseStatus.REJECTED.value: rejected += 1
-        else: failed += 1
-    batch_repo.update(batch_id, status="completed", posted=posted,
-                      rejected=rejected, failed=failed, completed_at=str(time.time()))
+        repo.update(raw["request_id"], status=ExpenseStatus.QUEUED.value)
+    service.submit_batch([ExpenseCreate(**raw) for raw in items], batch_id)
+    deadline = time.monotonic() + settings.allocation_timeout_seconds + settings.timeout_seconds * 3
+    while time.monotonic() < deadline:
+        current = service.refresh_batch(batch_id)
+        if not any(item["status"] == ExpenseStatus.RUNNING.value for item in current):
+            break
+        time.sleep(2)
+    current = [repo.get(raw["request_id"]) for raw in items]
+    posted = sum(item["status"] == ExpenseStatus.POSTED.value for item in current)
+    rejected = sum(item["status"] == ExpenseStatus.REJECTED.value for item in current)
+    failed = len(current) - posted - rejected
+    batch_repo.update(batch_request_id, status="completed", posted=posted,
+                      rejected=rejected, failed=failed, completed_at=str(time.time()),
+                      transaction_dataset=next((x.get("transaction_dataset") for x in current if x.get("transaction_dataset")), None),
+                      result_dataset=next((x.get("result_dataset") for x in current if x.get("result_dataset")), None))
+    monitor = next((x for x in current if x.get("monitor_job_id") or x.get("monitor_return_code")), None)
+    if monitor:
+        batch_repo.update(batch_request_id, monitor_job_id=monitor.get("monitor_job_id"),
+                          monitor_return_code=monitor.get("monitor_return_code"),
+                          monitor_summary=monitor.get("monitor_summary"))
 
 
 @app.get("/api/batches")
@@ -144,7 +160,7 @@ def run_batch(background: BackgroundTasks):
     batch = batch_repo.create({"expense_id": f"BATCH-{batch_id[:8]}", "batch_id": batch_id, "status": "queued",
                                "input_count": len(approved), "posted": 0,
                                "rejected": 0, "failed": 0})
-    background.add_task(_run_batch, batch["request_id"], approved)
+    background.add_task(_run_batch, batch["request_id"], batch_id, approved)
     return {"batch_id": batch_id, "request_id": batch["request_id"],
             "status": "queued", "input_count": len(approved)}
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+import re
 
 
 def parse_report(text: str) -> dict:
@@ -23,3 +24,20 @@ def parse_report(text: str) -> dict:
     if total is None:
         raise ValueError("report did not contain a TOTAL record")
     return {"expenses": expenses, "total": total}
+
+
+def parse_monitor_output(text: str) -> dict | None:
+    """Parse the bounded EXPMON SYSTSPRT summary when JES returned one."""
+    match = re.search(
+        r"EXPMON SUMMARY:\s*POSTED=(\d+)\s+REJECTED=(\d+)\s+FAILED=(\d+)\s+MALFORMED=(\d+)",
+        text or "",
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    return {
+        "posted": int(match.group(1)),
+        "rejected": int(match.group(2)),
+        "failed": int(match.group(3)),
+        "malformed": int(match.group(4)),
+    }

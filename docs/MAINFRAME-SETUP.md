@@ -14,7 +14,7 @@ These are deployment templates. Review them with the authorized site operations 
 
 ## REXX automation step
 
-`mainframe/jcl/EXPMON.jcl` is the controlled automation wrapper for `mainframe/rexx/EXPMON.rexx`. Submit it after `EXPPOST.jcl` has completed and the result dataset is available. It runs under `IKJEFT01`, reads only `Z86073.EXPTRK.RESULT`, prints a bounded summary to `SYSTSPRT`, and returns a useful condition code for a scheduler or operator:
+`mainframe/jcl/EXPMON.jcl` is the controlled automation wrapper for `mainframe/rexx/EXPMON.rexx`. Submit it after `EXPPOST.jcl` has completed and the batch result dataset is available. It runs under `IKJEFT01`, reads only the current batch's `EXPMONIN` DD, prints a bounded summary to `SYSTSPRT`, and returns a useful condition code for a scheduler or operator. FastAPI materializes this DD as the unique `Z86073.EXPTRK.RES.*` dataset for the batch:
 
 | Return code | Meaning | Operational action |
 |---:|---|---|
@@ -28,9 +28,11 @@ Dataset names, compiler procedures, DB2 subsystem, RACF permissions, utility opt
 
 ## Live API transaction allocation
 
-The live FastAPI path does not write concurrent requests into the shared `Z86073.EXPTRK.TRAN`. With `TRANSACTION_DATASET_MODE=per-request` (the default), it generates a unique `Z86073.EXPTRK.TXN.*` name, submits an `IEFBR14` allocation job using the confirmed `UNIT=SYSDA`/FB80 pattern, waits for allocation `CC 0000`, uploads one transaction, and submits `EXPPOST` with a request-specific `TRANSIN` DD. This avoids the `IKJ56225I DATA SET ... ALREADY IN USE` failure seen with the shared input dataset. The account's z/OSMF dynamic allocation endpoint returned an SMS/ACS error, so the known-working JCL allocation route is intentional.
+The live FastAPI path uses batch-level input datasets. With `TRANSACTION_DATASET_MODE=per-batch` (the default), it groups approved expenses, generates one unique `Z86073.EXPTRK.TXN.*` name, submits one `IEFBR14` allocation job using the confirmed `UNIT=SYSDA`/FB80 pattern, waits for allocation `CC 0000`, uploads all records, and submits one `EXPPOST` job with a batch-specific `TRANSIN` DD. The same batch gets a unique `Z86073.EXPTRK.RES.*` result dataset, preventing stale result records from earlier batches from being matched. Each result is still matched by expense ID. This avoids the `IKJ56225I DATA SET ... ALREADY IN USE` failure seen with the shared input dataset while reducing job and dataset overhead. The account's z/OSMF dynamic allocation endpoint returned an SMS/ACS error, so the known-working JCL allocation route is intentional.
 
-The application normalizes z/OSMF's nested job response fields. It does not mark a request `posted` until `EXPPOST` completes and the matching pipe-delimited result record is found. A fresh live verification on 2026-10-26 used `EX261026E05`: allocation succeeded, `JOB07939` returned `CC 0000` with `POSTED=1`, and `JOB07942` refreshed the report with `CC 0000`.
+The application normalizes z/OSMF's nested job response fields. It does not mark a request `posted` until `EXPPOST` completes and the matching pipe-delimited result record is found. Earlier live verification on 2026-10-26 used `EX261026E05` through the isolated allocation path. The current batch-level `TXN.*`/`RES.*` implementation is locally tested; run a new controlled z/OS batch before treating it as live verified.
+
+For reporting, the service submits `EXPRPT.jcl` once after at least one result is `POSTED`. The report job reads `Z86073.EXPTRK.MASTER` and writes `Z86073.EXPTRK.REPORT`; the API parses the `TOTAL` record and exposes the report dataset and latest batch/EXPMON metadata to the browser. A report job with `CC 0000` is not by itself proof of a posted expense: the matching result record and report detail must also be present.
 
 ## Confirmed commands and permissions
 

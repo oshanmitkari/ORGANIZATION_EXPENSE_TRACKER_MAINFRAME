@@ -20,7 +20,8 @@ window.addEventListener('load', async () => {
       inputCount: x.input_count,
       outputCount: x.posted,
       rejectedCount: x.rejected,
-      returnCode: x.status === 'completed' ? 0 : '—',
+      returnCode: x.monitor_return_code || (x.status === 'completed' ? 0 : '—'),
+      monitorSummary: x.monitor_summary || null,
       environment: 'z/OS'
     }));
   };

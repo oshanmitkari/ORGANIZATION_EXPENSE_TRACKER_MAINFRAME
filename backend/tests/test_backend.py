@@ -7,7 +7,7 @@ import pytest
 
 from backend.app.mainframe.layout import parse, serialize
 from backend.app.mainframe.employee_layout import parse as parse_employee, serialize as serialize_employee
-from backend.app.mainframe.report import parse_report
+from backend.app.mainframe.report import parse_monitor_output, parse_report
 from backend.app.mainframe.zowe_cli import ZoweCLI, ZoweError
 from backend.app.schemas.expenses import ExpenseCreate
 from backend.app.repositories.job_repository import JobRepository
@@ -60,6 +60,13 @@ def test_report_parser_reads_detail_and_total_records():
     assert report["total"] == {"count": 1, "amount_paise": 12345}
 
 
+def test_monitor_parser_reads_batch_summary():
+    assert parse_monitor_output(
+        "EXPMON SUMMARY: POSTED=2 REJECTED=1 FAILED=0 MALFORMED=0"
+    ) == {"posted": 2, "rejected": 1, "failed": 0, "malformed": 0}
+    assert parse_monitor_output("READY\nEND") is None
+
+
 def test_zowe_command_uses_argument_list_and_allowlist():
     calls = []
 
@@ -101,7 +108,7 @@ def test_repository_is_idempotent_for_expense_id(tmp_path):
     assert first["request_id"] == second["request_id"]
 
 
-def test_per_request_submission_uses_isolated_dataset_and_jcl(tmp_path):
+def test_batch_submission_uses_one_isolated_dataset_and_jcl(tmp_path):
     class Adapter:
         def __init__(self): self.calls = []
         def upload_transaction_file(self, path, dataset): self.calls.append(("upload", dataset))
@@ -125,7 +132,69 @@ def test_per_request_submission_uses_isolated_dataset_and_jcl(tmp_path):
     assert adapter.calls[0][0] == "submit"
     assert adapter.calls[1][0] == "upload"
     assert adapter.calls[2][0] == "submit"
-    assert adapter.calls[1][1].startswith("Z86073.EXPTRK.TXN.T")
+    assert adapter.calls[1][1].startswith("Z86073.EXPTRK.TXN.B")
     assert len(adapter.calls[1][1].rsplit(".", 1)[1]) <= 8
     assert f"DSN={adapter.calls[1][1]}" in adapter.calls[0][1]
     assert f"// SET TRANDSN={adapter.calls[1][1]}" in adapter.calls[2][1]
+
+
+def test_multiple_expenses_share_one_batch_upload_and_post_job(tmp_path):
+    class Adapter:
+        def __init__(self): self.calls = []
+        def upload_transaction_file(self, path, dataset):
+            self.calls.append(("upload", dataset, path.read_text()))
+        def submit_job(self, path):
+            self.calls.append(("submit", path.read_text()))
+            return {"jobid": "JOBBATCH"}
+        def get_job_status(self, job_id): return {"retcode": "CC 0000"}
+
+    settings = SimpleNamespace(zowe_enabled=True, data_dir=tmp_path,
+                               transaction_dataset="Z86073.EXPTRK.TRAN",
+                               transaction_dataset_mode="per-batch",
+                               transaction_dataset_prefix="Z86073.EXPTRK.TXN",
+                               result_dataset_prefix="Z86073.EXPTRK.RES",
+                               allocation_timeout_seconds=5,
+                               post_jcl=str(tmp_path / "EXPPOST.jcl"))
+    (tmp_path / "EXPPOST.jcl").write_text(
+        "// SET TRANDSN=Z86073.EXPTRK.TRAN\n// SET RESULTDSN=Z86073.EXPTRK.RESULT\n")
+    adapter = Adapter()
+    service = ExpenseService(settings, JobRepository(tmp_path / "jobs.json"), adapter)
+    result = service.submit_batch([
+        ExpenseCreate(**expense().__dict__),
+        ExpenseCreate(**expense(expense_id="EX20261001B").__dict__),
+    ], "BATCH01")
+    assert [item["status"] for item in result] == ["running", "running"]
+    uploads = [call for call in adapter.calls if call[0] == "upload"]
+    submissions = [call for call in adapter.calls if call[0] == "submit"]
+    assert len(uploads) == 1
+    assert uploads[0][1] == "Z86073.EXPTRK.TXN.BBATCH01"
+    assert len(uploads[0][2].splitlines()) == 2
+    assert len(submissions) == 2
+    assert "Z86073.EXPTRK.RES.BBATCH01" in submissions[1][1]
+
+
+def test_batch_refresh_matches_each_result_independently(tmp_path):
+    class Adapter:
+        def get_job_status(self, job_id): return {"retcode": "CC 0000"}
+        def read_output_dataset(self, dataset):
+            assert dataset == "Z86073.EXPTRK.RES.BBATCH02"
+            return ("EX20261001A|POSTED||OK\n"
+                    "EX20261001B|REJECTED|EMPLOYEE NOT ELIGIBLE|\n")
+
+    settings = SimpleNamespace(zowe_enabled=True, data_dir=tmp_path,
+                               result_dataset="Z86073.EXPTRK.RESULT",
+                               report_jcl=str(tmp_path / "missing-report.jcl"),
+                               monitor_jcl=str(tmp_path / "missing-monitor.jcl"))
+    repository = JobRepository(tmp_path / "jobs.json")
+    first = repository.create({"expense_id": "EX20261001A", "employee_id": "E0001001",
+                               "expense_date": "2026-10-01", "category": "FOOD",
+                               "amount": "1.00", "description": "first"})
+    second = repository.create({"expense_id": "EX20261001B", "employee_id": "E0001001",
+                                "expense_date": "2026-10-01", "category": "FOOD",
+                                "amount": "2.00", "description": "second"})
+    for item in (first, second):
+        repository.update(item["request_id"], status="running", mainframe_job_id="JOBBATCH",
+                          batch_id="BATCH02", result_dataset="Z86073.EXPTRK.RES.BBATCH02")
+    refreshed = ExpenseService(settings, repository, Adapter()).refresh_batch("BATCH02")
+    assert [item["status"] for item in refreshed] == ["posted", "rejected"]
+    assert refreshed[1]["rejection_reason"] == "EMPLOYEE NOT ELIGIBLE"
